@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>해양 수산 EDA 대시보드</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Ocean Fisheries Sample</p>
+          <h1>해양 수산 운영 EDA</h1>
+          <p id="dateRange" class="subhead">CSV 데이터를 불러오는 중입니다.</p>
+        </div>
+        <div class="topbar__meta" aria-label="데이터 요약">
+          <span id="rowCount">0 records</span>
+          <span>CP949 CSV</span>
+        </div>
+      </header>
+
+      <section class="filters" aria-label="대시보드 필터">
+        <label>
+          연도
+          <select id="yearFilter"></select>
+        </label>
+        <label>
+          국가
+          <select id="countryFilter"></select>
+        </label>
+        <label>
+          권역
+          <select id="regionFilter"></select>
+        </label>
+        <label>
+          어종
+          <select id="speciesFilter"></select>
+        </label>
+        <label>
+          기상 위험
+          <select id="riskFilter"></select>
+        </label>
+        <button id="resetFilters" class="reset-button" type="button" title="필터 초기화" aria-label="필터 초기화">↺</button>
+      </section>
+
+      <section class="kpi-grid" aria-label="핵심 지표">
+        <article class="kpi">
+          <span>총 어획량</span>
+          <strong id="kpiCatch">-</strong>
+          <small>catch_tons</small>
+        </article>
+        <article class="kpi">
+          <span>총 양식 생산</span>
+          <strong id="kpiAqua">-</strong>
+          <small>aquaculture_output_tons</small>
+        </article>
+        <article class="kpi">
+          <span>총 위판액</span>
+          <strong id="kpiLanding">-</strong>
+          <small>landing_value_usd</small>
+        </article>
+        <article class="kpi">
+          <span>총 수출액</span>
+          <strong id="kpiExport">-</strong>
+          <small>export_value_usd</small>
+        </article>
+        <article class="kpi">
+          <span>위반율</span>
+          <strong id="kpiViolation">-</strong>
+          <small>violations / inspections</small>
+        </article>
+        <article class="kpi">
+          <span>평균 만족도</span>
+          <strong id="kpiSatisfaction">-</strong>
+          <small>public_satisfaction_score</small>
+        </article>
+      </section>
+
+      <section class="insight-strip" aria-label="EDA 인사이트">
+        <article>
+          <span class="metric-dot metric-dot--teal"></span>
+          <div>
+            <strong id="insightTopSpecies">-</strong>
+            <p>어획량 기여도가 가장 큰 어종</p>
+          </div>
+        </article>
+        <article>
+          <span class="metric-dot metric-dot--coral"></span>
+          <div>
+            <strong id="insightRisk">-</strong>
+            <p>기상 위험 High 비중</p>
+          </div>
+        </article>
+        <article>
+          <span class="metric-dot metric-dot--gold"></span>
+          <div>
+            <strong id="insightPort">-</strong>
+            <p>검사 대비 위반율이 높은 항구</p>
+          </div>
+        </article>
+      </section>
+
+      <section class="dashboard-grid" aria-label="EDA 시각화">
+        <article class="panel panel--wide">
+          <div class="panel__heading">
+            <div>
+              <h2>월별 생산 흐름</h2>
+              <p>어획량, 양식 생산량, 만족도 평균</p>
+            </div>
+            <span id="trendSummary" class="panel__note">-</span>
+          </div>
+          <svg id="monthlyChart" class="chart chart--large" role="img" aria-label="월별 생산 흐름 차트"></svg>
+        </article>
+
+        <article class="panel">
+          <div class="panel__heading">
+            <div>
+              <h2>기상 위험 분포</h2>
+              <p>Low, Medium, High 기록 수</p>
+            </div>
+          </div>
+          <div class="donut-wrap">
+            <svg id="riskDonut" class="chart chart--donut" role="img" aria-label="기상 위험 분포 도넛 차트"></svg>
+            <div id="riskLegend" class="legend"></div>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel__heading">
+            <div>
+              <h2>어종별 어획량</h2>
+              <p>상위 어종 기준</p>
+            </div>
+          </div>
+          <div id="speciesBars" class="bar-list" aria-label="어종별 어획량 막대"></div>
+        </article>
+
+        <article class="panel">
+          <div class="panel__heading">
+            <div>
+              <h2>권역별 위판액</h2>
+              <p>landing_value_usd 합계</p>
+            </div>
+          </div>
+          <div id="regionBars" class="bar-list" aria-label="권역별 위판액 막대"></div>
+        </article>
+
+        <article class="panel">
+          <div class="panel__heading">
+            <div>
+              <h2>수온과 어획량</h2>
+              <p>점 색상은 기상 위험도</p>
+            </div>
+          </div>
+          <svg id="scatterChart" class="chart chart--medium" role="img" aria-label="수온과 어획량 산점도"></svg>
+        </article>
+
+        <article class="panel panel--wide">
+          <div class="panel__heading">
+            <div>
+              <h2>항구별 관리 지표</h2>
+              <p>검사 수, 위반 수, 안전사고 수</p>
+            </div>
+          </div>
+          <div id="portTable" class="rank-table" aria-label="항구별 관리 지표 표"></div>
+        </article>
+      </section>
+
+      <section class="records-panel" aria-label="필터 결과 테이블">
+        <div class="panel__heading">
+          <div>
+            <h2>필터 결과 샘플</h2>
+            <p id="sampleSummary">상위 12건</p>
+          </div>
+        </div>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>날짜</th>
+                <th>국가</th>
+                <th>항구</th>
+                <th>어종</th>
+                <th>어획량</th>
+                <th>위판액</th>
+                <th>기상 위험</th>
+                <th>만족도</th>
+              </tr>
+            </thead>
+            <tbody id="recordRows"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <div id="tooltip" class="tooltip" role="status"></div>
+    <script src="dashboard-data.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
